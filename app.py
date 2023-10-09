@@ -6,10 +6,6 @@ import plotly.express as px
 #import plotly.graph_objects as go
 from windrose import WindroseAxes
 
-# Load your weather dataset (assuming it's a pandas DataFrame)
-# Replace 'df' with the name of your DataFrame.
-# Example: df = pd.read_csv('your_weather_data.csv')
-
 
 st.set_page_config(layout='wide')
 
@@ -18,16 +14,16 @@ st.set_page_config(layout='wide')
    
 
 
-st.title("Weather Data Visualization")
+st.title("Weather Insights Analysis - Ypacarai Lake" )
 
 # Create a line plot for temperature
-st.write("## Temperature Over Time")
+st.write("### Monitoring the Lake's Vital Signs: Real-time Temperature Insights")
 
 #               ROW A
 
-st.markdown('### Metrics')
+#st.markdown('### Metrics')
 col1, col2, col3,col4 = st.columns(4)
-col1.metric("Temperature", "70 °F", "1.2 °F")
+col1.metric("Temperature", "27°C", "2°C")
 col2.metric("Wind", "9 mph", "-8%")
 col3.metric("Precipitation", "45%", "5%")
 col4.metric("Humidity", "86%", "-4%")
@@ -39,7 +35,7 @@ col4.metric("Humidity", "86%", "-4%")
 df_temp=pd.read_csv("csv/all_temperatures.csv") 
 print(df_temp)
 
-
+st.markdown('### Analyzing Temperature Variations')
 #PLOT EXAMPLE 2 
 import plotly.express as px
 import pandas as pd
@@ -48,7 +44,7 @@ import streamlit as st
 
 def plot_vars2(data, x, y, year):
     # Create a figure with Plotly Express
-    fig = px.line(data, x=x, y=y, color=year, title='Variation of temperature over the years')
+    fig = px.line(data, x=x, y=y, color=year)
     
   
     fig.update_layout(width=1200, height=600)
@@ -85,51 +81,67 @@ def plot_vars2(data, x, y, year):
 
     # Customize axes and legend
     fig.update_xaxes(title_text='Years', title_font=dict(size=22))
-    fig.update_yaxes(title_text='TEMPERATURE C', title_font=dict(size=22))
+    fig.update_yaxes(title_text='TEMPERATURE °C', title_font=dict(size=22))
     fig.update_layout(legend_title_text='YEAR', legend_title_font=dict(size=22))
 
     # Display the plot in Streamlit
     st.plotly_chart(fig)
 
-# Example usage in Streamlit
-# plot_vars(your_data_frame, 'x_column', 'y_column', 'year_column')
 
-
-
-st.markdown('### Line chart')
+#st.markdown('### Line chart')
 
 plot_vars2(df_temp,'day', 'valor', 'year')
 
-with st.expander("See explanation"):
-    st.write("The chart above shows some numbers I picked for you."
-             "I rolled actual dice for these, so they're *guaranteed* to"
-             "be random.")
-    st.image("https://static.streamlit.io/examples/dice.jpg")
 
 
+with st.expander("See explanation of the above figure"):
+    st.write("According to Sapriza, temperature is related to algal bloom because the majority of species prefer higher temperatures (Bonilla, 2009), reason why most blooms "
+             " occur during the summer or spring (Benítez Rodas, et al., 2017). Indeed, this aligns with the results obtained in the mention study. Where 75% of the cases studied"
+             " prior to the bloom, the periods in which this phenomenon is observed have higher temperatures compared to their respective periods when the event is not observed."
+             "The event is referred to green colored water in the lake. Furthermore, according to the characterization of algae, most of these blooms exhibit their highest growth"
+             "rates at temperatures between 25°C and 30°C. These conditions are observed in the days leading up to the sightings of the blooms and, conversely, are disrupted during the days leading up to the periods in which the event is not recorded.   " 
+
+            "Source: Sapriza and Pavetti, 2023. Catholic University, Science and Technology Faculty)")
+
+# SECOND ROW   
 all_precipitacion_df= pd.read_csv("csv/precipitacion/all_precipitacion.csv")
 ros=pd.read_csv("csv/rosely/2022_dir_velocidad.csv")
 
-c1, c2 = st.columns((5,5))
+c1, c2 = st.columns((7,5))
 with c1:
-    st.title('Year Precipitation')
+    #st.title('Yearly Precipitation Trends')
 
         # Define the order of months
 
         # Create a bar plot using Seaborn and set the order of x-axis labels
         #plt.figure(figsize=(100, 56))
-    sns.barplot(x='Month_Name', y='Valor', data=all_precipitacion_df, palette='Blues')
-    #plt.title('Year Precipitation', fontsize=50, color='blue' )
-    plt.xlabel('Month_name')
+    st.title('Monthly Precipitation Trends Across Years')
+
+# Create a bar plot using Seaborn
+    #plt.figure(figsize=(16, 6))
+    sns.barplot(data=all_precipitacion_df, x='Month_Name', y='Valor', hue='Year', palette='Blues')
+    #plt.title('Yearly Precipitation by Month')
+    plt.xlabel('Month')
     plt.ylabel('Precipitation (mm)')
-        # Display the plot in Streamlit
+    plt.legend(title='Year', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.xticks(rotation=45)
+
+    # Display the plot in Streamlit
     st.pyplot(plt)
 
+    with st.expander("See explanation of the above figure"):
+        st.write(" It is well-documented in the literature that rainfall generally does not promote blooming "
+                 "(Bonilla, 2009), unless it involves organic matter runoff that can be utilized by algae for " 
+                 "their growth. In such cases, rainfall should ideally occur several days before the onset of the bloom to allow sufficient time for its development. Examining periods with blooms, it's noteworthy that 75% of them occur without prior rainfall. Among the remaining 25% of cases,"
+                 " one event witnessed rainfall five days before the algae were observed, possibly suggesting an input of organic matter through runoff. Following the blooms, there were three instances of post-bloom precipitation, "
+                 "which may have contributed to the dispersion and dilution of the algae. "
+"Source: Sapriza and Pavetti, 2023. Catholic University, Science and Technology Faculty ")
 
 with c2:
 
     # ROSA DE VIENTO
-    fig = plt.figure(figsize=(15, 5))
+    st.title('Wind Direction and Speed Visualization')
+    fig = plt.figure() #figsize=(15, 5)
     ax = WindroseAxes(fig, rect=[0.1, 0.1, 0.8, 0.8])  # Define rect coordinates here
 
             # Add the windrose
@@ -141,6 +153,8 @@ with c2:
             # Display the plot in Streamlit
     st.pyplot(fig)
 
-
+    with st.expander("See explanation of the above figure"):
+        st.write("Wind speed can interfere in the mixing zone, reactivating cyanobacteria that are already in the process of sedimentation and thus promoting blooming (Benítez Rodas et al., 2017) (Delgado, Lozano, & Facetti Masulli, 2014). Wind gust can contribute to the reactivation of cyanobacteria, resulting in a bloom occurring again two and three days after the initial event, respectively."
+        "Source: Sapriza and Pavetti, 2023. Catholic University, Science and Technology Faculty ")
 
 
